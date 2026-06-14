@@ -18,7 +18,7 @@ async function main() {
 
   driver.use(new TimingInterceptor());
 
-  const result = await driver.execute("SELECT * FROM users");
+  const result = await driver.query("select * from users");
   console.log("result:", result);
 
   await client.end();

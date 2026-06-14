@@ -1,23 +1,24 @@
 import { Interceptor } from "../core/interceptor.interface";
-export class TimingInterceptor implements Interceptor<string, any[]> {
+import { QueryContext } from "../context/query.context";
+
+export class TimingInterceptor implements Interceptor<QueryContext, any[]> {
   private queryStartTime: Map<string, number> = new Map<string, number>();
 
-  public beforeQuery(query: string) {
-    this.queryStartTime.set(query, Date.now());
-
+  public beforeQuery(query: QueryContext) {
+    this.queryStartTime.set(query.sql, Date.now());
     return query;
   }
 
-  public afterQuery(result: any[], query: string) {
-    const duration: number = Date.now() - this.queryStartTime.get(query)!;
-
-    console.log(`Query: ${query}, Duration: ${duration}ms`);
-    this.queryStartTime.delete(query);
+  public afterQuery(result: any[], query: QueryContext) {
+    const duration: number = Date.now() - this.queryStartTime.get(query.sql)!;
+    query.duration = duration
+    console.log(`Query: ${query.sql}, Duration: ${duration}ms`);
+    this.queryStartTime.delete(query.sql);
     return result;
   }
 
-  public onError(error: unknown, query: string) {
-    this.queryStartTime.delete(query);
-    console.log(`Query failed: ${query}`);
+  public onError(error: unknown, query: QueryContext) {
+    this.queryStartTime.delete(query.sql);
+    console.log(`Query failed: ${query.sql}`);
   }
 }
