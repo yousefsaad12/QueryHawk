@@ -1,15 +1,26 @@
-let greet = function (name: string) {
-  return `Hello ${name}`;
-};
-console.log(greet("Yousef"));
+import "dotenv/config";
+import { Client } from "pg";
+import { PgDriver } from "./drivers/pg.driver";
+import { TimingInterceptor } from "./interceptors/timing.interceptor";
 
-const originalGreet = greet;
+async function main() {
+  const client = new Client({
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+  });
 
-greet = function (name: string) {
-  console.log("before calling function");
-  const result = originalGreet(name);
-  console.log("after calling function");
-  return result;
-};
+  await client.connect();
+  console.log("connected to database");
+  const driver = new PgDriver(client);
 
-console.log(greet("Yousef"));
+  driver.use(new TimingInterceptor());
+
+  const result = await driver.execute("SELECT * FROM users");
+  console.log("result:", result);
+
+  await client.end();
+}
+main().catch(console.error);
