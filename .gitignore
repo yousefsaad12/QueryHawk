@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+
+# compiled output
+dist/
+
+# environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# test coverage
+coverage/
+
+# typescript cache
+*.tsbuildinfo
