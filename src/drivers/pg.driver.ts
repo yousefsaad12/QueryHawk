@@ -13,6 +13,7 @@ export class PgDriver extends BaseDriver<QueryContext, any[]> {
     const context: QueryContext = {
       sql,
       params,
+      queryType: this.extractQueryType(sql),
       startTime: Date.now(),
     };
 
@@ -24,5 +25,16 @@ export class PgDriver extends BaseDriver<QueryContext, any[]> {
       query.params,
     );
     return result.rows;
+  }
+
+  protected extractQueryType(
+    sql: string,
+  ): "SELECT" | "INSERT" | "UPDATE" | "DELETE" | "OTHER" {
+    const trimmed = sql.trim().toUpperCase();
+    if (trimmed.startsWith("SELECT")) return "SELECT";
+    if (trimmed.startsWith("INSERT")) return "INSERT";
+    if (trimmed.startsWith("UPDATE")) return "UPDATE";
+    if (trimmed.startsWith("DELETE")) return "DELETE";
+    return "OTHER";
   }
 }

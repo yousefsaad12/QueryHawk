@@ -12,13 +12,13 @@ async function main() {
     password: process.env.DB_PASSWORD,
   });
 
-  await client.connect();
+  await client.connect(); 
   console.log("connected to database");
   const driver = new PgDriver(client);
 
   driver.use(new TimingInterceptor());
 
-  const result = await driver.query("select * from users");
+  const result = await driver.query("select * FROM users");
   console.log("result:", result);
 
   await client.end();
