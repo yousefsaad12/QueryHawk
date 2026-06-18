@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Client } from "pg";
 import { PgDriver } from "./drivers/pg.driver";
 import { TimingInterceptor } from "./interceptors/timing.interceptor";
+import { StackTraceInterceptor } from "./interceptors/stackTrace.interceptor";
 
 async function main() {
   const client = new Client({
@@ -12,11 +13,11 @@ async function main() {
     password: process.env.DB_PASSWORD,
   });
 
-  await client.connect(); 
+  await client.connect();
   console.log("connected to database");
   const driver = new PgDriver(client);
 
-  driver.use(new TimingInterceptor());
+  driver.use(new TimingInterceptor()).use(new StackTraceInterceptor());
 
   const result = await driver.query("select * FROM users");
   console.log("result:", result);
