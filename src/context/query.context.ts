@@ -11,4 +11,5 @@ export interface QueryContext {
   success?: boolean;
   explainPlan?: any;
   suggestion?: any;
+  callerStack?: string;
 }
