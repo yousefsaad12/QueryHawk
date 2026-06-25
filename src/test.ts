@@ -3,6 +3,7 @@ import { Client } from "pg";
 import { PgDriver } from "./drivers/pg.driver";
 import { TimingInterceptor } from "./interceptors/timing.interceptor";
 import { StackTraceInterceptor } from "./interceptors/stackTrace.interceptor";
+import { FingerprintInterceptor } from "./interceptors/fingerprint.interceptor";
 
 async function main() {
   getUsers();
@@ -22,10 +23,19 @@ async function getUsers() {
 
   const driver = new PgDriver(client);
 
-  driver.use(new TimingInterceptor()).use(new StackTraceInterceptor());
+  driver
+    .use(new TimingInterceptor())
+    .use(new StackTraceInterceptor())
+    .use(new FingerprintInterceptor());
 
-  const result = await driver.query("select * from users");
-
-  console.log("Query result:", result);
+    const result1 = await driver.query("select * from users where id = $1", [3]);
+    const result2 = await driver.query("select * from users where id = 1");
+    const result3 = await driver.query("select * from users where id = $1", [3]);
+    const result4 = await driver.query("select * from users where id = $1", [3]);
+    
+    console.log("Query result:", result1);
+    console.log("Query result:", result2);
+    console.log("Query result:", result3);
+    console.log("Query result:", result4);
   await client.end();
 }

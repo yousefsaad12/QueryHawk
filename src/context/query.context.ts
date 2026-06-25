@@ -12,4 +12,5 @@ export interface QueryContext {
   explainPlan?: any;
   suggestion?: any;
   callerStack?: string;
+  normalizedSql?: string;
 }
