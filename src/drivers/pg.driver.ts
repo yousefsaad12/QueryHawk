@@ -21,7 +21,7 @@ export class PgDriver extends BaseDriver<QueryContext, any[]> {
     this.nativeQuery = nativeQuery || client.query.bind(client);
   }
 
-  public async query(sql: string, params?: any[]) {
+  public async query(sql: string, params?: any[], callerStack?: string) {
     if (!sql || typeof sql !== 'string') {
       throw new ValidationError('SQL query must be a non-empty string');
     }
@@ -35,6 +35,7 @@ export class PgDriver extends BaseDriver<QueryContext, any[]> {
       params,
       queryType: this.extractQueryType(sql),
       startTime: Date.now(),
+      callerStack,
     };
 
     return this.execute(context);

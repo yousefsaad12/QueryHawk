@@ -11,7 +11,7 @@ export abstract class BaseDriver<TQuery, TResult> {
   public async execute(query: TQuery) {
     let q = query;
     const queryContext = query as unknown as QueryContext;
-    queryContext.callerStack = new Error().stack ?? "";
+    
     for (const interceptor of this.interceptors) {
       if (interceptor.beforeQuery)
         q = await interceptor.beforeQuery(queryContext);

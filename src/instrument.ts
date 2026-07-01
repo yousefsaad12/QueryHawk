@@ -25,20 +25,20 @@ export function instrumentPg(client: Client) {
 
   client.query = function (this: any, ...args: any[]) {
     try {
+      // Capture stack trace at the point of actual query call
+      const callerStack = new Error().stack ?? "";
+      
       const firstArg = args[0];
 
-      // 1. If it's a standard string query
       if (typeof firstArg === "string") {
         const params = Array.isArray(args[1]) ? args[1] : undefined;
-        return driver.query(firstArg, params);
+        return driver.query(firstArg, params, callerStack);
       }
 
-      // 2. If it's a config object: { text: "SELECT...", values: [...] }
       if (firstArg && typeof firstArg === "object" && "text" in firstArg) {
-        return driver.query((firstArg as any).text, (firstArg as any).values);
+        return driver.query((firstArg as any).text, (firstArg as any).values, callerStack);
       }
 
-      // 3. Fallback for anything else (like legacy callbacks)
       return (original as any).apply(this, args);
     } catch (error) {
       console.error('Error in instrumented query:', error);
