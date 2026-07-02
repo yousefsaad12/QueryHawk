@@ -1,8 +1,8 @@
 import { Client } from "pg";
 import { PgDriver } from "./drivers/pg.driver";
-import { TimingInterceptor } from "./interceptors/timing.interceptor";
-import { StackTraceInterceptor } from "./interceptors/stackTrace.interceptor";
-import { FingerprintInterceptor } from "./interceptors/fingerprint.interceptor";
+import { TimingInterceptor } from "./interceptors/timingInterceptor";
+import { StackTraceInterceptor } from "./interceptors/stackTraceInterceptor";
+import { FingerprintInterceptor } from "./interceptors/fingerprintInterceptor";
 import { ConfigurationError } from "./errors/query.errors";
 
 export function instrumentPg(client: Client) {
