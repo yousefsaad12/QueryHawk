@@ -8,7 +8,7 @@ import {
   classifyPostgresError 
 } from "../errors/query.errors";
 
-export class PgDriver extends BaseDriver<QueryContext, any[]> {
+export class PgDriver extends BaseDriver<QueryContext, QueryResult> {
   private client: Client;
   private nativeQuery: Function;
 
@@ -41,14 +41,14 @@ export class PgDriver extends BaseDriver<QueryContext, any[]> {
     return this.execute(context);
   }
 
-  protected async run(query: QueryContext): Promise<any[]> {
+  protected async run(query: QueryContext): Promise<QueryResult> {
     try {
       const result: QueryResult = await this.nativeQuery.call(
         this.client,
         query.sql,
         query.params,
       );
-      return result.rows;
+      return result;
     } catch (error) {
       const classifiedError = classifyPostgresError(error);
       

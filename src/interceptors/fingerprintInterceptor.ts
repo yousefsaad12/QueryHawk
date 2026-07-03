@@ -1,13 +1,14 @@
+import { QueryResult } from "pg";
 import { QueryContext } from "../context/query.context";
 import { Interceptor } from "../core/interceptor.interface";
 
 export class FingerprintInterceptor implements Interceptor<
   QueryContext,
-  any[]
+  QueryResult
 > {
   private fingerprintMap: Map<string, number> = new Map();
 
-  public afterQuery(result: any[], queryContext: QueryContext) {
+  public afterQuery(result: QueryResult, queryContext: QueryContext) {
     try {
       const fingerprint = this.normalize(queryContext.sql);
 

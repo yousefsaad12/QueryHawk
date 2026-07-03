@@ -2,8 +2,9 @@ import * as path from "path";
 
 import { QueryContext } from "../context/query.context";
 import { Interceptor } from "../core/interceptor.interface";
+import { QueryResult } from "pg";
 
-export class StackTraceInterceptor implements Interceptor<QueryContext, any[]> {
+export class StackTraceInterceptor implements Interceptor<QueryContext,QueryResult> {
   private LIBRARY_DIRS = ["core", "interceptors", "drivers", "context", "instrument"];
 
   public beforeQuery(queryContext: QueryContext) {

@@ -1,7 +1,8 @@
 import { Interceptor } from "../core/interceptor.interface";
 import { QueryContext } from "../context/query.context";
+import { QueryResult } from "pg";
 
-export class TimingInterceptor implements Interceptor<QueryContext, any[]> {
+export class TimingInterceptor implements Interceptor<QueryContext, QueryResult> {
   private queryStartTime: Map<string, number> = new Map<string, number>();
 
   public beforeQuery(queryContext: QueryContext) {
@@ -13,7 +14,7 @@ export class TimingInterceptor implements Interceptor<QueryContext, any[]> {
     return queryContext;
   }
 
-  public afterQuery(result: any[], queryContext: QueryContext) {
+  public afterQuery(result: QueryResult, queryContext: QueryContext) {
     try {
       const startTime = this.queryStartTime.get(queryContext.sql);
       if (startTime !== undefined) {

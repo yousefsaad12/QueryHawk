@@ -11,7 +11,7 @@ export abstract class BaseDriver<TQuery, TResult> {
   public async execute(query: TQuery) {
     let q = query;
     const queryContext = query as unknown as QueryContext;
-    
+
     for (const interceptor of this.interceptors) {
       if (interceptor.beforeQuery)
         q = await interceptor.beforeQuery(queryContext);
@@ -29,8 +29,9 @@ export abstract class BaseDriver<TQuery, TResult> {
       throw error;
     }
 
-    for (const i of [...this.interceptors].reverse()) {
-      if (i.afterQuery) result = await i.afterQuery(result, queryContext);
+    for (const interceptor of this.interceptors) {
+      if (interceptor.afterQuery)
+        result = await interceptor.afterQuery(result, queryContext);
     }
     queryContext.success = true;
     this.logQueryContext(queryContext);
@@ -52,7 +53,6 @@ export abstract class BaseDriver<TQuery, TResult> {
 
     if (queryContext.normalizedSql) {
       console.log(`NORMALIZED SQL: ${queryContext.normalizedSql}`);
-  
     }
 
     console.log("START TIME:", new Date(queryContext.startTime).toISOString());
@@ -84,7 +84,6 @@ export abstract class BaseDriver<TQuery, TResult> {
       console.log("STACK TRACE (query origin):");
       console.log(queryContext.stackTrace);
     }
-
 
     console.log("======================================\n");
   }
