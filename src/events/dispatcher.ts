@@ -22,6 +22,14 @@ export class Dispatcher {
 
     setImmediate(() => this.processNext());
   }
+
+  public subscribe(subscriber: Subscriber): void {
+    this.subscribers.push(subscriber);
+  }
+
+  public stop(): void {
+    this.running = false;
+  }
   private async dispatchToSubscribers(event: QueryContext): Promise<void> {
     for (const subscriber of this.subscribers) {
       try {
