@@ -2,8 +2,8 @@ export class Queue<T> {
   private queryItems: T[] = [];
   private head: number = 0;
 
-  public enqueue(queryContext: T) {
-    this.queryItems.push(queryContext);
+  public enqueue(item: T) {
+    this.queryItems.push(item);
   }
 
   public dequeue(): T {
@@ -16,7 +16,7 @@ export class Queue<T> {
     return item;
   }
 
-  private isEmpty(): boolean {
+  public isEmpty(): boolean {
     return this.head >= this.queryItems.length;
   }
   private compact() {
