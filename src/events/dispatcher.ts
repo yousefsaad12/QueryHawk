@@ -1,6 +1,6 @@
 import { QueryContext } from "../context/query.context";
 import { Queue } from "./queue";
-import { Subscriber } from "./subscriberInterface";
+import { Subscriber } from "./subscriber.interface";
 
 export class Dispatcher {
   private subscribers: Subscriber[] = [];
