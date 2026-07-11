@@ -1,3 +1,5 @@
+import { QueueError } from "../errors/query.errors";
+
 export class Queue<T> {
   private queryItems: T[] = [];
   private head: number = 0;
@@ -7,7 +9,7 @@ export class Queue<T> {
   }
 
   public dequeue(): T {
-    if (this.isEmpty()) throw Error("Queue is empty");
+    if (this.isEmpty()) throw new QueueError("Queue is empty");
 
     const item = this.queryItems[this.head++];
 

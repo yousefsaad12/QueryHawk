@@ -1,5 +1,6 @@
 import { QueryContext } from "../context/query.context";
 import { Queue } from "./queue";
+import { QueueError } from "../errors/query.errors";
 
 export class EventBus {
   private queue: Queue<QueryContext>;
@@ -9,6 +10,15 @@ export class EventBus {
   }
 
   publish(event: QueryContext): void {
-    this.queue.enqueue(event);
+    try {
+      this.queue.enqueue(event);
+    } catch (error) {
+      if (error instanceof QueueError) {
+        console.error('Failed to publish event to queue:', error.message);
+      } else {
+        console.error('Unexpected error publishing event:', error);
+      }
+      throw error;
+    }
   }
 }

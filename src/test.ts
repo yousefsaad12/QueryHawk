@@ -4,6 +4,7 @@ import {
   ConfigurationError,
   ConnectionError,
   QueryExecutionError,
+  classifyPostgresError,
 } from "./errors/query.errors";
 import { instrumentPg } from "./instrument";
 
@@ -39,10 +40,21 @@ main().catch((error) => {
 
 async function getUsers() {
   // Validate environment variables
+  const requiredEnvVars = ['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
+  for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+      throw new ConfigurationError(`Missing required environment variable: ${envVar}`);
+    }
+  }
+
+  const port = Number(process.env.DB_PORT);
+  if (isNaN(port) || port <= 0 || port > 65535) {
+    throw new ConfigurationError(`Invalid DB_PORT: must be a valid port number (1-65535)`);
+  }
 
   const client = new Client({
     host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
+    port: port,
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -51,7 +63,11 @@ async function getUsers() {
   try {
     await client.connect();
     console.log("connected to database");
+  } catch (error) {
+    throw classifyPostgresError(error);
+  }
 
+  try {
     instrumentPg(client);
 
     // --- Fingerprint equivalence: numeric literal vs param ---

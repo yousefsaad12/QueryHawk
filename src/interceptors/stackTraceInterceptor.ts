@@ -66,4 +66,13 @@ export class StackTraceInterceptor implements Interceptor<QueryContext,QueryResu
       return absolutePath.replace(/\\/g, '/');
     }
   }
+
+  public onError(error: unknown, queryContext: QueryContext): void {
+    try {
+      queryContext.error = error instanceof Error ? error : new Error(String(error));
+      queryContext.success = false;
+    } catch (err) {
+      console.error('Error in StackTraceInterceptor.onError:', err);
+    }
+  }
 }

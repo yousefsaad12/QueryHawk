@@ -22,4 +22,13 @@ export class SlowQueryInterceptor implements Interceptor<QueryContext, QueryResu
       return result;
     }
   }
+
+  public onError(error: unknown, queryContext: QueryContext): void {
+    try {
+      queryContext.error = error instanceof Error ? error : new Error(String(error));
+      queryContext.success = false;
+    } catch (err) {
+      console.error("Error in SlowQueryInterceptor.onError:", err);
+    }
+  }
 }

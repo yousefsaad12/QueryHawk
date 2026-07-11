@@ -20,7 +20,11 @@ export class Dispatcher {
       await this.dispatchToSubscribers(event);
     }
 
-    setImmediate(() => this.processNext());
+    try {
+      setImmediate(() => this.processNext());
+    } catch (error) {
+      console.error('Error in Dispatcher.setImmediate:', error);
+    }
   }
 
   public subscribe(subscriber: Subscriber): void {

@@ -82,6 +82,12 @@ const ERROR_CODE_MAP = {
   '42703': { type: 'query', message: 'Column not found' },
 } as const;
 
+export class QueueError extends QueryHawkError {
+  constructor(message: string, originalError?: unknown) {
+    super(`Queue error: ${message}`, originalError);
+  }
+}
+
 export function classifyPostgresError(error: unknown): QueryHawkError {
   const code = getPostgresErrorCode(error);
   

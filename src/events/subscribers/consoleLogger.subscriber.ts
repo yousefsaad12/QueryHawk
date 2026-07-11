@@ -3,16 +3,21 @@ import { Subscriber } from "../subscriber.interface";
 
 export class ConsoleLogSubscriber implements Subscriber {
   handle(event: QueryContext): void {
-    if (!event.isSlow) return;
-    this.printQueryContext(event);
+    try {
+      if (!event.isSlow) return;
+      this.printQueryContext(event);
+    } catch (error) {
+      console.error('Error in ConsoleLogSubscriber.handle:', error);
+    }
   }
 
   private printQueryContext(queryContext: QueryContext): void {
-    console.log("======================================");
-    console.log("🧠 QUERY CONTEXT");
+    try {
+      console.log("======================================");
+      console.log("🧠 QUERY CONTEXT");
 
-    console.log("--------------------------------------");
-    console.log("SQL:", queryContext.sql);
+      console.log("--------------------------------------");
+      console.log("SQL:", queryContext.sql);
 
     if (queryContext.params?.length) {
       console.log("PARAMS:", queryContext.params);
@@ -55,5 +60,8 @@ export class ConsoleLogSubscriber implements Subscriber {
     }
 
     console.log("======================================\n");
+    } catch (error) {
+      console.error('Error in ConsoleLogSubscriber.printQueryContext:', error);
+    }
   }
 }
