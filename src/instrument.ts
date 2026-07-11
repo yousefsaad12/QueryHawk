@@ -5,6 +5,17 @@ import { StackTraceInterceptor } from "./interceptors/stackTraceInterceptor";
 import { FingerprintInterceptor } from "./interceptors/fingerprintInterceptor";
 import { ConfigurationError } from "./errors/query.errors";
 import { SlowQueryInterceptor } from "./interceptors/slowQueryInterceptor";
+import { Queue } from "./events/queue";
+import { EventBus } from "./events/eventBus";
+import { Dispatcher } from "./events/dispatcher";
+import { QueryContext } from "./context/query.context";
+import { ConsoleLogSubscriber } from "./events/subscribers/consoleLogger.subscriber";
+
+const queue = new Queue<QueryContext>();
+const eventBus = new EventBus(queue);
+const dispatcher = new Dispatcher(queue);
+dispatcher.subscribe(new ConsoleLogSubscriber());
+dispatcher.start();
 
 export function instrumentPg(client: Client) {
   if (!client) {
@@ -17,13 +28,13 @@ export function instrumentPg(client: Client) {
     throw new ConfigurationError("Client.query is not a function");
   }
 
-  const driver = new PgDriver(client, original);
+  const driver = new PgDriver(client, original, eventBus);
 
   driver
     .use(new TimingInterceptor())
     .use(new StackTraceInterceptor())
     .use(new FingerprintInterceptor())
-    .use(new SlowQueryInterceptor(1000)); 
+    .use(new SlowQueryInterceptor(1000));
 
   client.query = function (this: any, ...args: any[]) {
     try {

@@ -1,7 +1,10 @@
 import { Interceptor } from "./interceptor.interface";
 import { QueryContext } from "../context/query.context";
+import { EventBus } from "../events/eventBus";
 export abstract class BaseDriver<TQuery, TResult> {
   private interceptors: Interceptor<TQuery, TResult>[] = [];
+
+  constructor(protected eventBus: EventBus) {}
 
   public use(interceptor: Interceptor<TQuery, TResult>) {
     this.interceptors.push(interceptor);
@@ -25,7 +28,7 @@ export abstract class BaseDriver<TQuery, TResult> {
       this.interceptors.forEach((interceptor) =>
         interceptor.onError?.(error, queryContext),
       );
-      this.logQueryContext(queryContext);
+      this.eventBus.publish(queryContext);
       throw error;
     }
 
@@ -34,10 +37,9 @@ export abstract class BaseDriver<TQuery, TResult> {
         result = await interceptor.afterQuery(result, queryContext);
     }
     queryContext.success = true;
-    this.logQueryContext(queryContext);
+    this.eventBus.publish(queryContext);
     return result;
   }
-
 
   protected abstract run(query: TQuery): Promise<TResult>;
 
